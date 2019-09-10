@@ -29,13 +29,15 @@
       <img :src="seller.avatar" alt="">
     </div>
     <!--弹出层-->
-    <div class="mark-wrapper" v-show="detailShow">
+    <div class="mark-wrapper" v-show="detailShow" translate="fade">
       <div class="detail-wrapper clearfix">
         <div class="detail-main">
           <!--商家名字-->
           <h1 class="seller-name">{{seller.name}}</h1>
           <!--星星-->
-          <div class="star-wrapper"></div>
+          <div class="star-wrapper">
+            <Star :size="24" :grade="4.2"></Star>
+          </div>
           <!--优惠信息-->
           <div class="title">
             <div class="line"></div>
@@ -43,9 +45,9 @@
             <div class="line"></div>
           </div>
           <div class="supports">
-            <div class="supports-item" v-if="seller.supports" v-for="item in seller.supports">
-              <span>{{item.type}}</span>
-              <span>{{item.description}}</span>
+            <div :key="index" class="supports-item" v-if="seller.supports" v-for="(item,index) in seller.supports">
+              <span v-if="seller.supports" :class="classMap[item.type]" class="su-img"></span>
+              <span class="txt">{{item.description}}</span>
             </div>
           </div>
           <!--商家公告-->
@@ -68,13 +70,18 @@
 </template>
 
 <script>
+    import Star from '../star/Star.vue'
     export default {
         name: 'Header',
         props: ['seller'],
         data () {
           return {
-            detailShow: false
+            detailShow: false,
+            grade: ''
           }
+        },
+        components: {
+          Star
         },
         created () {
           this.classMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
@@ -225,6 +232,13 @@
       width 100%
       height 100%
       background-color rgba(7,17,27,0.8)
+      transition all linear 0.5s
+      &.fade-transition
+        opacity 1
+        background-color rgba(7,17,27,0.8)
+      &.fade-enter,&.fade-leave
+        opacity 0
+        background-color rgba(7,17,27,0)
       & .detail-wrapper
         width 100%
         min-height 100%
@@ -243,7 +257,6 @@
             margin 16px auto 28px auto
             height 24px
             width 100%
-            border 1px solid red
           & .title
             display flex
             & .line
@@ -251,10 +264,55 @@
               top -8px
               border-1px(rgba(255,255,255,0.2))
             & .text
-              font-size 16px
+              font-size 14px
               line-height 16px
               font-weight 700
               padding 0 12px
+          & .supports
+            padding 24px 12px 28px 12px
+            & .supports-item:last-child
+              margin-bottom 0
+            & .supports-item
+              margin-bottom 12px
+              & .su-img
+                width 16px
+                height 16px
+                margin-right 6px
+                vertical-align top
+              & .txt
+                vertical-align top
+                font-size 12px
+                line-height 12px
+              & .decrease
+                width 12px
+                height 12px
+                display inline-block
+                vertical-align top
+                bg-img("./decrease_2")
+              & .discount
+                width 12px
+                height 12px
+                display inline-block
+                vertical-align top
+                bg-img("./discount_2")
+              & .guarantee
+                width 12px
+                height 12px
+                display inline-block
+                vertical-align top
+                bg-img("./guarantee_2")
+              & .invoice
+                width 12px
+                height 12px
+                display inline-block
+                vertical-align top
+                bg-img("./invoice_2")
+              & .special
+                width 12px
+                height 12px
+                display inline-block
+                vertical-align top
+                bg-img("./special_2")
           & .seller-detail
             padding 24px 12px
             font-size 12px

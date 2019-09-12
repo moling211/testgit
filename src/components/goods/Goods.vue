@@ -15,11 +15,11 @@
         <div v-for="(item,index) in goods" :key="index" class="right-list">
           <h1 class="right-title">{{item.name}}</h1>
           <ul v-for="(food,index) in item.foods" :key="index" class="right-item">
-            <li class="right-content">
+            <li class="right-content" @click="lookDetail(food)">
               <img :src="food.icon" alt="">
               <div class="text-content">
                 <h2 class="food-title">{{food.name}}</h2>
-                <p class="food-description">{{food.description}}</p>
+                <p class="food-description dec">{{food.description}}</p>
                 <p class="food-description">
                   <span>月售{{food.sellCount}}</span>
                   <span>好评率{{food.rating}}%</span>
@@ -29,27 +29,41 @@
                   <span class="oldprice" v-if="food.oldPrice>0">￥{{food.oldPrice}}</span>
                 </p>
               </div>
+              <!--按钮-->
+              <div class="control-wrapper">
+                <Cartcontrol :food="food"></Cartcontrol>
+              </div>
             </li>
           </ul>
         </div>
       </div>
+      <!--详情页-->
+      <Food  ref="singleFood" :food = "singleFood"></Food>
     </div>
+    <Shopcart :selectList="selectList" :seller="seller"></Shopcart>
   </div>
 </template>
 
 <script>
   import BScroll from 'better-scroll'
-
+  import Shopcart from '../shopcart/Shopcart'
+  import Cartcontrol from '../cartcontrol/Cartcontrol'
+  import Food from '../food/Food'
   const Errno = 0
   export default {
     name: 'Goods',
     data () {
       return {
-        goods: {},
+        goods: [],
         classMap: ['decrease', 'discount', 'special', 'guarantee', 'invoice'],
         heightArr: [],
-        scrollY: 0
+        scrollY: 0,
+        seller: [],
+        singleFood: []
       }
+    },
+    components: {
+      Shopcart, Cartcontrol, Food
     },
     computed: {
       currentIndex () {
@@ -61,6 +75,17 @@
           }
         }
         return 0
+      },
+      selectList () {
+        let arr = []
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              arr.push(food)
+            }
+          })
+        })
+        return arr
       }
     },
     created () {
@@ -76,10 +101,25 @@
       }, response => {
         // error callback
       })
+      this.$http.get('/api/seller').then(response => {
+        // get body data
+        response = response.body
+        if (response.errno === Errno) {
+          this.seller = response.data
+          // console.log(this.seller)
+        }
+      }, response => {
+        // error callback
+      })
     },
     methods: {
+      // 查看详情页
+      lookDetail (food) {
+        this.$refs.singleFood.showdetal()
+        this.singleFood = food
+        console.log(food)
+      },
       choosefood (index) {
-        console.log(index)
         let listHeight = this.$refs.foodScroll.getElementsByClassName('right-list')
         let el = listHeight[index]
         this.foodScroll.scrollToElement(el, 300)
@@ -89,6 +129,7 @@
           click: true
         })
         this.foodScroll = new BScroll(this.$refs.foodScroll, {
+          click: true,
           probeType: 3
         })
         this.foodScroll.on('scroll', (pos) => {
@@ -121,6 +162,7 @@
     top 174px
     bottom 52px
     display flex
+    z-index 10
     & .good-left
       flex 0 0 80px
       width 80px
@@ -215,6 +257,8 @@
                 font-size 10px
                 color rgb(147, 153, 159)
                 line-height 10px
+                &.dec
+                  line-height 14px
                 &:last-child
                   margin-bottom 0
                 & .newprice
@@ -228,4 +272,8 @@
                   font-size 10px
                   line-height 14px
                   font-weight 700
+            & .control-wrapper
+              position absolute
+              right 6px
+              bottom 6px
 </style>

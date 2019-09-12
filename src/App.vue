@@ -27,7 +27,7 @@ export default {
       response = response.body
       if (response.errno === Errno) {
         this.seller = response.data
-        console.log(this.seller)
+        // console.log(this.seller)
       }
     }, response => {
       // error callback

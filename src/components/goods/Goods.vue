@@ -15,7 +15,7 @@
         <div v-for="(item,index) in goods" :key="index" class="right-list">
           <h1 class="right-title">{{item.name}}</h1>
           <ul v-for="(food,index) in item.foods" :key="index" class="right-item">
-            <li class="right-content" @click="lookDetail(food)">
+            <li class="right-content" @click.stop.prevent="lookDetail(food)">
               <img :src="food.icon" alt="">
               <div class="text-content">
                 <h2 class="food-title">{{food.name}}</h2>
@@ -37,9 +37,9 @@
           </ul>
         </div>
       </div>
-      <!--详情页-->
-      <Food  ref="singleFood" :food = "singleFood"></Food>
     </div>
+    <!--详情页-->
+    <Food  ref="singleFood" :food = "singleFood"></Food>
     <Shopcart :selectList="selectList" :seller="seller"></Shopcart>
   </div>
 </template>
@@ -117,7 +117,6 @@
       lookDetail (food) {
         this.$refs.singleFood.showdetal()
         this.singleFood = food
-        console.log(food)
       },
       choosefood (index) {
         let listHeight = this.$refs.foodScroll.getElementsByClassName('right-list')

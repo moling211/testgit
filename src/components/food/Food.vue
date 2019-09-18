@@ -15,33 +15,59 @@
           <span class="new-price">￥{{food.price}}</span>
           <span class="old-price">{{food.oldPrice}}</span>
         </div>
-        <div class="control-wrapper">
+        <div class="control-wrapper" v-if="food.count>0">
           <Cartcontrol :food = "food"></Cartcontrol>
         </div>
+        <div class="buy" v-if="!food.count" @click.stop.prevent="addNum">加入购物车</div>
+      </div>
+      <Split></Split>
+      <!--商品介绍-->
+      <div class="food-info">
+        <h1>商品介绍</h1>
+        <p>{{food.info}}</p>
+      </div>
+      <Split></Split>
+      <!--商品评价-->
+      <div class="food-ratings">
+        <h1 class="title">商品评价</h1>
+        <Ratingselect :ratings="food.ratings" :ratingText="ratingText" :selectType="selectType"></Ratingselect>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+    import Vue from 'vue'
     import BScroll from 'better-scroll'
     import Cartcontrol from '../cartcontrol/Cartcontrol'
+    import Split from '../split/Split'
+    import Ratingselect from '../ratingselect/Ratingselect'
     export default {
         name: 'Food',
         data () {
           return {
-            show: false
+            show: false,
+            ratingText: {
+              all: '全部',
+              pro: '推荐',
+              neg: '吐槽'
+            },
+            selectType: 2
           }
         },
         created () {
           this.$nextTick(() => {
-            this.Scroll = new BScroll(this.$refs.foodScroll, {
-              click: true
-            })
+            if (!this.Scroll) {
+              this.Scroll = new BScroll(this.$refs.foodScroll, {
+                click: true
+              })
+            } else {
+              this.Scroll.refresh()
+            }
           })
         },
         components: {
-          Cartcontrol
+          Cartcontrol, Split, Ratingselect
         },
         props: ['food'],
         methods: {
@@ -50,12 +76,16 @@
           },
           closeDetail () {
             this.show = false
+          },
+          addNum () {
+            Vue.set(this.food, 'count', 1)
           }
         }
     }
 </script>
 
 <style scoped lang="stylus">
+  @import "../../common/stylus/mixin.styl"
   .food
     position fixed
     top 0
@@ -89,6 +119,7 @@
         font-size 10px
         line-height 10px
         color rgb(147,153,159)
+        border-1px(rgba(7,17,27,0.1))
         .name
           font-weight 700
           color rgb(7,17,27)
@@ -108,6 +139,38 @@
 
         .control-wrapper
           position absolute
-          right 0
-          top 0
+          right 18px
+          bottom  10px
+        .buy
+          position absolute
+          right 18px
+          bottom  18px
+          background rgb(0,160,220)
+          color #fff
+          padding 6px 10px
+          border-radius 12px
+          font-size 10px
+          line-height 12px
+      .food-info
+        padding 18px
+        border-1px(rgba(7,17,27,0.1))
+        &>h1
+          font-size 14px
+          color #07111b
+          line-height 14px
+          margin-bottom 6px
+        & >p
+          font-size 12px
+          color rgb(77,85,93)
+          line-height 24px
+          padding 0 8px
+      .food-ratings
+        width 100%
+        padding 18px 0
+        .title
+          font-size 14px
+          color #07111b
+          line-height 14px
+          margin-bottom 6px
+          padding 0 18px
 </style>

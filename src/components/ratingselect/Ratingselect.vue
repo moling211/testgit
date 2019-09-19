@@ -1,26 +1,15 @@
 <template>
   <div class="ratings-wrapper">
     <div class="selectType">
-      <span class="block postive" :class="selectType === 2?'active':''">{{ratingText.all}} <i>{{allCount}}</i></span>
-      <span class="block postive" :class="selectType === 0?'active':''">{{ratingText.pro}} <i>{{proCount}}</i></span>
-      <span class="block negtive" :class="selectType === 1?'active':''">{{ratingText.neg}} <i>{{negCount}}</i></span>
+      <span @click="select(2)" class="block postive" :class="selectTy === 2?'active':''">{{ratingText.all}} <i>{{ratings?ratings.length:0}}</i></span>
+      <span @click="select(0)" class="block postive" :class="selectTy === 0?'active':''">{{ratingText.pro}} <i>{{pos.length}}</i></span>
+      <span @click="select(1)" class="block negtive" :class="selectTy === 1?'active':''">{{ratingText.neg}} <i>{{neg.length}}</i></span>
     </div>
     <div class="ratings-hr">
       <p class="hr-p">
-        <i class="icon-check_circle"></i>
+        <i @click="chose" class="icon-check_circle" :class="onlyCon?'on':''"></i>
         <span class="hr-span">只看有内容的评价</span>
       </p>
-    </div>
-    <div class="ratings-list">
-      <ul class="list-ul">
-        <li v-for="(item,index) in ratings" :key="index" class="list-li">
-          <p>{{item.rateTime}}</p>
-          <p>{{item.username}}</p>
-          <p>{{item.rateType}}</p>
-          <p>{{item.text}}</p>
-          <img :src="item.avatar" alt="">
-        </li>
-      </ul>
     </div>
   </div>
 </template>
@@ -28,32 +17,43 @@
 <script>
     export default {
         name: 'Ratingselect',
-        props: ['ratings', 'ratingText', 'selectType'],
+        props: ['ratings', 'ratingText', 'selectType', 'onlyContent'],
         data () {
           return {
-            allCount: 0,
-            proCount: 0,
-            negCount: 0
+            selectTy: this.selectType,
+            onlyCon: this.onlyContent
           }
         },
         computed: {
+          pos () {
+            if (this.ratings) {
+              return this.ratings.filter((ratings) => {
+                return ratings.rateType === 0
+              })
+            } else {
+              return []
+            }
+          },
+          neg () {
+            if (this.ratings) {
+              return this.ratings.filter((ratings) => {
+                return ratings.rateType === 1
+              })
+            } else {
+              return []
+            }
+          }
         },
         created () {
         },
         methods: {
-          getCount () {
-            this.allCount = 0
-            this.proCount = 0
-            this.negCount = 0
-            // console.log(this)
-            for (let i = 0; i < this.ratings.length; i++) {
-              if (this.ratings[i].rateType === 0) {
-                this.proCount += 1
-              } else if (this.ratings[i].rateType === 1) {
-                this.negCount += 1
-              }
-            }
-            this.allCount = this.proCount + this.negCount
+          select (type) {
+            this.selectTy = type
+            this.$emit('selectChose', type)
+          },
+          chose () {
+            this.onlyCon = !this.onlyCon
+            this.$emit('onlyChose', this.onlyCon)
           }
         }
     }
@@ -89,6 +89,7 @@
         background rgba(77,85,93,0.2)
         &.active
           background rgba(77,85,93,1)
+          color #fff
     .ratings-hr
       padding 12px 18px
       border-1px(rgba(7,17,27,0.1))
@@ -98,16 +99,9 @@
         .icon-check_circle
           font-size 24px
           vertical-align top
+          &.on
+            color #00c850
         .hr-span
           font-size 12px
           vertical-align top
-    .ratings-list
-      width 100%
-      .list-ul
-        padding 0 18px
-        .list-li
-          padding 12px 0
-          border-1px(rgba(7,17,27,0.1))
-          &:last-child
-            border-none()
 </style>

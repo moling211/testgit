@@ -7,7 +7,11 @@
 <script>
     export default {
         name: 'Star',
-        arr: [],
+        data () {
+          return {
+            arr: []
+          }
+        },
         props: ['size', 'grade'],
         computed: {
         },
@@ -39,35 +43,50 @@
     text-align center
     & .item-star
       display inline-block
+    & .on16
+      width 15px
+      height 15px
+      bg-img('./star16_on')
+      margin-right 6px
+    & .off16
+      width 15px
+      height 15px
+      bg-img('./star16_off')
+      margin-right 6px
+    & .half16
+      width 15px
+      height 15px
+      margin-right 6px
+      bg-img('./star16_half')
     & .on24
       width 24px
       height 24px
       bg-img('./star24_on')
-      margin-right 12px
+      margin-right 8px
     & .off24
       width 24px
       height 24px
       bg-img('./star24_off')
-      margin-right 12px
+      margin-right 8px
     & .half24
       width 24px
       height 24px
-      margin-right 12px
+      margin-right 8px
       bg-img('./star24_half')
     & .on36
       width 36px
       height 36px
-      margin-right 12px
+      margin-right 10px
       bg-img('./star36_on')
     & .off36
       width 36px
       height 36px
-      margin-right 12px
+      margin-right 10px
       bg-img('./star36_off')
     & .half36
       width 36px
       height 36px
-      margin-right 12px
+      margin-right 10px
       bg-img('./star36_half')
     & .on48
       width 48px

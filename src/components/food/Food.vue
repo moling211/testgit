@@ -30,7 +30,24 @@
       <!--商品评价-->
       <div class="food-ratings">
         <h1 class="title">商品评价</h1>
-        <Ratingselect :ratings="food.ratings" :ratingText="ratingText" :selectType="selectType"></Ratingselect>
+        <Ratingselect @onlyChose="choseFunction" @selectChose ="selectFunction" :ratings="food.ratings" :ratingText="ratingText" :selectType="selectType" :onlyContent="onlyContent"></Ratingselect>
+      </div>
+      <!--评价列表-->
+      <div v-show="!food.ratings || !(food.ratings.length)" class="no-ratings">暂无评价</div>
+      <div class="rating-list" v-show="food.ratings">
+        <ul class="list-ul">
+          <li class="list-li" v-for="(item,index) in food.ratings" :key="index" v-show="needShow(item.rateType, item.text)">
+            <p class="time">{{item.rateTime | formatDate}}</p>
+            <p class="rating">
+              <i :class="{'icon-thumb_up':item.rateType===0, 'icon-thumb_down':item.rateType===1}"></i>
+              <span class="text">{{item.text}}</span>
+            </p>
+            <p class="user">
+              <span class="username">{{item.username}}</span>
+              <img :src="item.avatar">
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -42,6 +59,7 @@
     import Cartcontrol from '../cartcontrol/Cartcontrol'
     import Split from '../split/Split'
     import Ratingselect from '../ratingselect/Ratingselect'
+    import {formatDate} from '../../common/js/date.js'
     export default {
         name: 'Food',
         data () {
@@ -52,7 +70,14 @@
               pro: '推荐',
               neg: '吐槽'
             },
-            selectType: 2
+            selectType: 2,
+            onlyContent: false
+          }
+        },
+        filters: {
+          formatDate (time) {
+            var date = new Date(time)
+            return formatDate(date, 'yyyy-MM-dd hh:mm')
           }
         },
         created () {
@@ -65,6 +90,8 @@
               this.Scroll.refresh()
             }
           })
+        },
+        computed: {
         },
         components: {
           Cartcontrol, Split, Ratingselect
@@ -79,6 +106,29 @@
           },
           addNum () {
             Vue.set(this.food, 'count', 1)
+          },
+          needShow (type, text) {
+            if (text === '' && this.onlyContent) {
+              return false
+            } else if (type === this.selectType) {
+                return true
+            } else if (this.selectType === 2) {
+                return true
+            } else {
+              return false
+            }
+          },
+          choseFunction (data) {
+            this.onlyContent = data
+            this.$nextTick(() => {
+              this.Scroll.refresh()
+            })
+          },
+          selectFunction (data) {
+            this.selectType = data
+            this.$nextTick(() => {
+              this.Scroll.refresh()
+            })
           }
         }
     }
@@ -136,7 +186,6 @@
           .old-price
             font-size 10px
             color rgb(147,153,159)
-
         .control-wrapper
           position absolute
           right 18px
@@ -166,11 +215,55 @@
           padding 0 8px
       .food-ratings
         width 100%
-        padding 18px 0
+        padding-top 18px
         .title
           font-size 14px
           color #07111b
           line-height 14px
           margin-bottom 6px
           padding 0 18px
+      .rating-list
+        width 100%
+        .list-ul
+          padding 0 18px
+          .list-li
+            padding 16px 0
+            border-1px(rgba(7,17,27,0.1))
+            position relative
+            &:last-child
+              border-none()
+            .time
+              font-size 10px
+              color rgb(147,153,159)
+              line-height 12px
+            .rating
+              .icon-thumb_up
+                font-size 12px
+                color rgb(0,160,220)
+                line-height 24px
+              .icon-thumb_down
+                font-size 12px
+                color rgb(147,153,159)
+                line-height 24px
+              .text
+                vertical-align center
+                font-size 12px
+                line-height 16px
+                color rgb(7,17,27)
+            .user
+              position absolute
+              right 0
+              top 18px
+              .username
+                display inline-block
+                vertical-align top
+              &>img
+                width 12px
+                border-radius 50%
+                height 12px
+                display inline-block
+                vertical-align top
+      .no-ratings
+        padding 18px
+        font-size 12px
 </style>

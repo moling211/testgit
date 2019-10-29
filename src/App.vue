@@ -6,19 +6,28 @@
        <router-link class="tab-item" :to="{ path:'/ratings'}">评论</router-link>
        <router-link class="tab-item" :to="{ path:'/seller'}">商家</router-link>
      </div>
-     <router-view :seller="seller"></router-view>
+     <keep-alive>
+       <router-view :seller="seller"></router-view>
+     </keep-alive>
   </div>
 </template>
 
 <script>
   import Header from './components/header/Header'
   import Home from './Home'
+  // import {urlParse} from './common/js/util.js'
   const Errno = 0
 export default {
   name: 'App',
   data () {
     return {
-      seller: {}
+      seller: {
+        // id: (() => {
+        //   let queryParam = urlParse()
+        //   return queryParam.id
+        // }
+        // )()
+      }
     }
   },
   created () {
@@ -28,6 +37,7 @@ export default {
       if (response.errno === Errno) {
         this.seller = response.data
         // console.log(this.seller)
+        // console.log(this.seller.id)
       }
     }, response => {
       // error callback

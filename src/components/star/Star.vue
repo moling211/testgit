@@ -17,7 +17,6 @@
         },
         created () {
           if (this.grade) {
-            this.arr = []
             var score = Math.floor(this.grade)
             var half = this.grade - score
             for (let i = 0; i < score; i++) {
